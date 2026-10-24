@@ -162,7 +162,8 @@ def validate():
         return jsonify({
             "error": "Email address is too long."
         }), 400
-
+    
+    email = email.lower()
     assessment = validate_email(email)
     explanation, ai_generated = generate_explanation(email, assessment)
 
