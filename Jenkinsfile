@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -20,14 +21,22 @@ pipeline {
                 sh './venv/bin/python -m pytest -v'
             }
         }
+
+        stage('Package Artifact') {
+            steps {
+                sh 'tar -czf email-sender-validator.tar.gz app.py requirements.txt Jenkinsfile tests/'
+                archiveArtifacts artifacts: 'email-sender-validator.tar.gz', fingerprint: true
+            }
+        }
     }
 
     post {
         success {
-            echo 'Build successful! All automated tests passed.'
+            echo 'Build successful! All automated tests passed and artifact archived.'
         }
         failure {
             echo 'Build failed. Check the console output for errors.'
         }
     }
 }
+
