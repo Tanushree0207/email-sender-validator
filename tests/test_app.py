@@ -52,3 +52,12 @@ def test_history(client):
     assert "history" in response.json
     assert "total" in response.json
 
+def test_email_with_whitespace(client):
+    response = client.post(
+        "/validate",
+        json={"email": "  test@example.com  "}
+    )
+
+    assert response.status_code == 200
+    assert response.json["email"] == "test@example.com"
+    assert response.json["risk_level"] == "Low"
