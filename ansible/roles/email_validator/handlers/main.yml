@@ -1,0 +1,5 @@
+
+---
+- name: Mark deployment updated
+  debug:
+    msg: "Email Sender Validator application files have been updated successfully."

@@ -1,0 +1,11 @@
+
+---
+- name: Deploy Email Sender Validator
+  hosts: webservers
+  gather_facts: false
+
+  vars:
+    app_deploy_dir: /tmp/email-sender-validator
+
+  roles:
+    - email_validator

@@ -1,0 +1,19 @@
+
+---
+- name: Create application deployment directory
+  file:
+    path: "{{ app_deploy_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy Flask application
+  copy:
+    src: "{{ playbook_dir }}/../app.py"
+    dest: "{{ app_deploy_dir }}/app.py"
+  notify: Mark deployment updated
+
+- name: Copy requirements file
+  copy:
+    src: "{{ playbook_dir }}/../requirements.txt"
+    dest: "{{ app_deploy_dir }}/requirements.txt"
+  notify: Mark deployment updated
