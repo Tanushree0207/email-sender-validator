@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-validator-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: email-validator
+  template:
+    metadata:
+      labels:
+        app: email-validator
+    spec:
+      containers:
+        - name: email-validator
+          image: email-sender-validator:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
