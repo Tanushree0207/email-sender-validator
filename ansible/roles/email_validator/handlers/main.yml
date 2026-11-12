@@ -1,5 +1,6 @@
-
 ---
-- name: Mark deployment updated
-  debug:
-    msg: "Email Sender Validator application files have been updated successfully."
+- name: Restart Email Validator Service
+  ansible.builtin.shell: |
+    launchctl bootout gui/{{ lookup('pipe', 'id -u') }} "{{ launch_agent }}" 2>/dev/null || true
+    launchctl bootstrap gui/{{ lookup('pipe', 'id -u') }} "{{ launch_agent }}"
+  changed_when: true

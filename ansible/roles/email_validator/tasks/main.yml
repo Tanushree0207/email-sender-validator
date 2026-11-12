@@ -1,19 +1,55 @@
-
 ---
 - name: Create application deployment directory
-  file:
+  ansible.builtin.file:
     path: "{{ app_deploy_dir }}"
     state: directory
     mode: '0755'
 
+- name: Create LaunchAgents directory
+  ansible.builtin.file:
+    path: "{{ launch_agent | dirname }}"
+    state: directory
+    mode: '0755'
+
 - name: Copy Flask application
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../app.py"
     dest: "{{ app_deploy_dir }}/app.py"
-  notify: Mark deployment updated
+    mode: '0644'
+  notify: Restart Email Validator Service
 
 - name: Copy requirements file
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../requirements.txt"
     dest: "{{ app_deploy_dir }}/requirements.txt"
-  notify: Mark deployment updated
+    mode: '0644'
+  notify: Restart Email Validator Service
+
+- name: Create Python virtual environment
+  ansible.builtin.command:
+    cmd: "python3 -m venv {{ app_venv }}"
+    creates: "{{ app_venv }}/bin/python"
+
+- name: Install application dependencies
+  ansible.builtin.pip:
+    requirements: "{{ app_deploy_dir }}/requirements.txt"
+    virtualenv: "{{ app_venv }}"
+
+- name: Configure macOS LaunchAgent service
+  ansible.builtin.template:
+    src: email-validator.plist.j2
+    dest: "{{ launch_agent }}"
+    mode: '0644'
+  notify: Restart Email Validator Service
+
+- name: Check Email Validator Service status
+  ansible.builtin.command:
+    cmd: "launchctl print gui/{{ lookup('pipe', 'id -u') }}/com.email-sender-validator"
+  register: service_status
+  changed_when: false
+  failed_when: false
+
+- name: Start Email Validator Service
+  ansible.builtin.command:
+    cmd: "launchctl bootstrap gui/{{ lookup('pipe', 'id -u') }} {{ launch_agent }}"
+  when: service_status.rc != 0

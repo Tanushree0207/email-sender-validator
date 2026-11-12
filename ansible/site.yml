@@ -1,11 +1,14 @@
-
 ---
 - name: Deploy Email Sender Validator
   hosts: webservers
   gather_facts: false
+  become: false
 
   vars:
     app_deploy_dir: /tmp/email-sender-validator
+    app_venv: /tmp/email-sender-validator/venv
+    app_port: 5002
+    launch_agent: "{{ lookup('env', 'HOME') }}/Library/LaunchAgents/com.email-sender-validator.plist"
 
   roles:
     - email_validator
