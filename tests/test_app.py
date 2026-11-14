@@ -61,3 +61,14 @@ def test_email_with_whitespace(client):
     assert response.status_code == 200
     assert response.json["email"] == "test@example.com"
     assert response.json["risk_level"] == "Low"
+
+def test_history_latest_email(client):
+    client.post(
+        "/validate",
+        json={"email": "latest@example.com"}
+    )
+
+    response = client.get("/history")
+
+    assert response.status_code == 200
+    assert response.json["latest_email"] == "latest@example.com"
