@@ -72,3 +72,15 @@ def test_disposable_email_domain(client):
     assert response.json["risk_score"] == 30
     assert response.json["risk_level"] == "Medium"
     assert "Disposable email domain detected" in response.json["reasons"]
+
+
+def test_history_latest_email(client):
+    client.post(
+        "/validate",
+        json={"email": "latest@example.com"}
+    )
+
+    response = client.get("/history")
+
+    assert response.status_code == 200
+    assert response.json["latest_email"] == "latest@example.com"

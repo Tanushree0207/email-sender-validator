@@ -102,12 +102,14 @@ def validate():
 # Endpoint 3: Validation history
 @app.route("/history", methods=["GET"])
 def get_history():
+
+    latest_email = history[0]["email"] if history else None
+
     return jsonify({
         "total": len(history),
+        "latest_email": latest_email,
         "history": history
     })
-
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
 
