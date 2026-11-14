@@ -61,3 +61,14 @@ def test_email_with_whitespace(client):
     assert response.status_code == 200
     assert response.json["email"] == "test@example.com"
     assert response.json["risk_level"] == "Low"
+
+def test_disposable_email_domain(client):
+    response = client.post(
+        "/validate",
+        json={"email": "user@mailinator.com"}
+    )
+
+    assert response.status_code == 200
+    assert response.json["risk_score"] == 30
+    assert response.json["risk_level"] == "Medium"
+    assert "Disposable email domain detected" in response.json["reasons"]

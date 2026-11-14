@@ -26,6 +26,16 @@ def validate_email(email):
     reasons = []
 
     domain = email.split("@")[1].lower()
+        # Check for disposable email domains
+    disposable_domains = [
+        "mailinator.com",
+        "tempmail.com",
+        "10minutemail.com"
+    ]
+
+    if domain in disposable_domains:
+        score += 30
+        reasons.append("Disposable email domain detected")
 
     # Check for suspicious domain indicators
     if any(part.startswith("xn--") for part in domain.split(".")):
